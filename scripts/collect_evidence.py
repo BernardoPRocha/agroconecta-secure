@@ -1,4 +1,4 @@
-"""Record public HTTPS checks without claiming cloud deployment from configuration.
+﻿"""Record public HTTPS checks without claiming cloud deployment from configuration.
 
 Only the Azure Brazil South VM DNS origin is supported. The collector does not
 follow HTTP redirects and rejects arbitrary hosts, IPs, ports and URL paths.
@@ -8,6 +8,7 @@ import argparse
 import http.client
 import json
 import re
+import ssl
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -48,7 +49,8 @@ def validated_host(origin: str) -> str:
 
 def https_request(host, path, *, method="GET", data=None, headers=None, timeout=30, max_bytes=100000):
     """Verified TLS, fixed HTTPS port; no automatic redirects or proxying."""
-    conn = http.client.HTTPSConnection(host, port=443, timeout=timeout)
+    tls_context = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH)
+    conn = http.client.HTTPSConnection(host, port=443, timeout=timeout, context=tls_context)
     try:
         conn.request(method, path, body=data, headers=headers or {})
         response = conn.getresponse()
@@ -121,3 +123,4 @@ if __name__ == "__main__":
     dest.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
     print("APROVADO" if result["passed"] else "FALHOU: confira o JSON gerado")
     raise SystemExit(0 if result["passed"] else 1)
+
