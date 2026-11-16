@@ -1,0 +1,6 @@
+O AgroConecta reúne um portal e o detector real de folhas de tomate desenvolvido em ACV.
+Secure prepara a execução desse produto em Docker e Azure, com verificação automática do código,
+da imagem e dos segredos, publicação via identidade OIDC, HTTPS e monitoramento.
+O detector está integrado e foi testado localmente. RAG, cotações e sensores permanecem pendentes.
+A infraestrutura ainda precisa ser executada na conta Azure e comprovada no relatório.
+O código do alerta existe; o print Firing só pode ser obtido ao executar o teste real.

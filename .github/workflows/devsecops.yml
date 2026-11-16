@@ -1,0 +1,131 @@
+name: AgroConecta - DevSecOps integrado
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: agroconecta-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_COMMENTS: "false"
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Dependências CPU
+        run: |
+          python -m pip install torch==2.7.1 torchvision==0.22.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -r requirements.txt -r requirements-dev.txt semgrep
+      - name: Testes incluindo inferência real
+        run: python -m pytest -q tests
+      - name: Semgrep bloqueante
+        run: semgrep scan --config=p/default --error app vision scripts terraform
+      - uses: hashicorp/setup-terraform@v3
+      - name: Validar infraestrutura
+        working-directory: terraform
+        run: |
+          terraform fmt -check
+          terraform init -backend=false
+          terraform validate
+      - name: Validar Compose e shell
+        env:
+          APP_IMAGE: agroconecta-mvp:validation
+          SITE_DOMAIN: agroconecta-validation.brazilsouth.cloudapp.azure.com
+          GRAFANA_ADMIN_PASSWORD: validation-only-not-deployed
+        run: |
+          docker compose -f deploy/compose.yml config --quiet
+          bash -n scripts/deploy_vm.sh
+      - name: Construir imagem
+        run: docker build -t agroconecta-mvp:${{ github.sha }} .
+      - name: Trivy bloqueante
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: agroconecta-mvp:${{ github.sha }}
+          format: table
+          exit-code: '1'
+          vuln-type: os,library
+          severity: HIGH,CRITICAL
+      - name: Validar configuração Caddy
+        run: docker run --rm -e SITE_DOMAIN=agroconecta-validation.example.com -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" caddy:2.10.2-alpine caddy validate --config /etc/caddy/Caddyfile
+      - name: Smoke test do contêiner sem root
+        run: |
+          docker run -d --name smoke --read-only --tmpfs /tmp:rw,noexec,nosuid,size=256m,mode=1777 --cap-drop ALL --security-opt no-new-privileges -p 127.0.0.1:8000:8000 agroconecta-mvp:${{ github.sha }}
+          for i in $(seq 1 60); do
+            curl -fsS http://localhost:8000/ready && break || sleep 3
+          done
+          curl -fsS http://localhost:8000/ready
+          test "$(docker exec smoke id -u)" = 10001
+          curl -fsS -F file=@examples/0_aparencia_saudavel_1.jpg http://localhost:8000/visao/api/predict | python -c "import json,sys; d=json.load(sys.stdin); assert d['width'] > 0 and 'detections' in d"
+      - name: Logs e limpeza smoke
+        if: always()
+        run: |
+          docker logs smoke || true
+          docker rm -f smoke || true
+      - name: Preservar exatamente a imagem validada
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: docker save agroconecta-mvp:${{ github.sha }} | gzip > image.tar.gz
+      - uses: actions/upload-artifact@v4
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        with:
+          name: validated-image
+          path: image.tar.gz
+          retention-days: 1
+  deploy:
+    needs: validate
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      HUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+      SITE_DOMAIN: ${{ vars.SITE_DOMAIN }}
+      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_VM_NAME: ${{ vars.AZURE_VM_NAME }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v4
+        with:
+          name: validated-image
+      - name: Carregar imagem validada
+        run: docker load -i image.tar.gz
+      - uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Publicar e resolver digest imutável
+        run: |
+          docker tag agroconecta-mvp:${{ github.sha }} "$HUB_USER/agroconecta-mvp:${{ github.sha }}"
+          docker push "$HUB_USER/agroconecta-mvp:${{ github.sha }}"
+          DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$HUB_USER/agroconecta-mvp:${{ github.sha }}")
+          echo "APP_IMAGE=$DIGEST" >> "$GITHUB_ENV"
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy via Azure Run Command sem SSH
+        run: |
+          python scripts/render_deploy.py
+          az vm run-command invoke --resource-group "$AZURE_RESOURCE_GROUP" --name "$AZURE_VM_NAME" --command-id RunShellScript --scripts @deploy-command.sh --output json > deploy-result.json
+          python -c "import json; d=json.load(open('deploy-result.json')); assert any('AGROCONECTA_DEPLOY_OK' in v.get('message','') for v in d.get('value', [])), 'Deploy remoto não confirmou sucesso'"
+          curl --fail --show-error --retry 5 --retry-all-errors --max-time 15 "https://$SITE_DOMAIN/ready"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: deploy-result
+          path: deploy-result.json

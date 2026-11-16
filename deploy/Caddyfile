@@ -1,0 +1,20 @@
+{$SITE_DOMAIN} {
+	encode gzip
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy same-origin
+		Permissions-Policy "camera=(self), microphone=()"
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+	@private path /metrics /metrics/*
+	handle @private {
+		respond 404
+	}
+	handle {
+		request_body {
+			max_size 9MB
+		}
+		reverse_proxy app:8000
+	}
+}

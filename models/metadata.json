@@ -1,0 +1,13 @@
+{
+  "classes": [
+    "tomate_saudavel",
+    "pinta_preta",
+    "requeima"
+  ],
+  "imgsz": 320,
+  "epochs_requested": 30,
+  "source_run": "/workspace/scratch/5c0b4f82e4eb/agroconecta-acv/runs/baseline_cpu",
+  "sha256": "59208d773ed4ccaf543d8edca5c0b9f8aa395bd33cee9a339979ef15e9fc02e2",
+  "status": "trained_not_field_validated",
+  "epochs_completed": 30
+}

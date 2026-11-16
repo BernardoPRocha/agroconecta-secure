@@ -1,0 +1,44 @@
+[
+  {
+    "example": "0_aparencia_saudavel_1.jpg",
+    "dataset_key": "a69bc414b535bfe925c8",
+    "original": "1684.jpg",
+    "url": "https://raw.githubusercontent.com/pratikkayal/PlantDoc-Object-Detection-Dataset/4730a233a555b30ee98e0879c63ad25d82407455/TEST/1684.jpg",
+    "ground_truth_class_id": 0
+  },
+  {
+    "example": "0_aparencia_saudavel_2.jpg",
+    "dataset_key": "75d0d1cdc9fe1f67f527",
+    "original": "main-qimg-d9c2a93f60568485c989670d9bbf703b.jpg",
+    "url": "https://raw.githubusercontent.com/pratikkayal/PlantDoc-Object-Detection-Dataset/4730a233a555b30ee98e0879c63ad25d82407455/TEST/main-qimg-d9c2a93f60568485c989670d9bbf703b.jpg",
+    "ground_truth_class_id": 0
+  },
+  {
+    "example": "1_pinta_preta_1.jpg",
+    "dataset_key": "73ac1bb0fab5c70b64fe",
+    "original": "early_blight1-150x150.jpg",
+    "url": "https://raw.githubusercontent.com/pratikkayal/PlantDoc-Object-Detection-Dataset/4730a233a555b30ee98e0879c63ad25d82407455/TEST/early_blight1-150x150.jpg",
+    "ground_truth_class_id": 1
+  },
+  {
+    "example": "1_pinta_preta_2.jpg",
+    "dataset_key": "385b11756b74b532a7bf",
+    "original": "tomato_early-blight_01_zoom.jpg",
+    "url": "https://raw.githubusercontent.com/pratikkayal/PlantDoc-Object-Detection-Dataset/4730a233a555b30ee98e0879c63ad25d82407455/TEST/tomato_early-blight_01_zoom.jpg",
+    "ground_truth_class_id": 1
+  },
+  {
+    "example": "2_requeima_1.jpg",
+    "dataset_key": "97f5c111245739f55b6e",
+    "original": "LateBlt09_06.jpg",
+    "url": "https://raw.githubusercontent.com/pratikkayal/PlantDoc-Object-Detection-Dataset/4730a233a555b30ee98e0879c63ad25d82407455/TEST/LateBlt09_06.jpg",
+    "ground_truth_class_id": 2
+  },
+  {
+    "example": "2_requeima_2.jpg",
+    "dataset_key": "96bccbda41dc2d3d5c42",
+    "original": "18c.jpg",
+    "url": "https://raw.githubusercontent.com/pratikkayal/PlantDoc-Object-Detection-Dataset/4730a233a555b30ee98e0879c63ad25d82407455/TEST/18c.jpg",
+    "ground_truth_class_id": 2
+  }
+]

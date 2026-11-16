@@ -1,0 +1,25 @@
+{
+  "uid": "agroconecta-overview",
+  "title": "AgroConecta | Observabilidade do MVP",
+  "schemaVersion": 41,
+  "version": 1,
+  "refresh": "15s",
+  "tags": ["AgroConecta", "GS2026", "Secure"],
+  "time": {"from": "now-30m", "to": "now"},
+  "templating": {"list": []},
+  "panels": [
+    {"id": 1, "type": "stat", "title": "Alvo disponível (up)", "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0},
+     "datasource": {"type":"prometheus","uid":"agro-prom"},
+     "targets": [{"refId":"A","expr":"up{job=\"agroconecta-azure-prod\"}"}],
+     "fieldConfig": {"defaults": {"min": 0, "max": 1, "mappings": [{"type":"value","options":{"0":{"text":"Indisponível"},"1":{"text":"Online"}}}]}, "overrides": []}},
+    {"id": 2, "type": "timeseries", "title": "Requisições por segundo", "gridPos": {"h": 8, "w": 16, "x": 8, "y": 0},
+     "datasource": {"type":"prometheus","uid":"agro-prom"},
+     "targets": [{"refId":"A","expr":"sum(rate(http_requests_total[5m]))","legendFormat":"requisições/s"}]},
+    {"id": 3, "type": "timeseries", "title": "Latência média (segundos)", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+     "datasource": {"type":"prometheus","uid":"agro-prom"},
+     "targets": [{"refId":"A","expr":"sum(rate(http_request_duration_seconds_sum[5m])) / clamp_min(sum(rate(http_request_duration_seconds_count[5m])), 0.000001)","legendFormat":"latência média"}]},
+    {"id": 4, "type": "timeseries", "title": "Erros HTTP 5xx por segundo", "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+     "datasource": {"type":"prometheus","uid":"agro-prom"},
+     "targets": [{"refId":"A","expr":"sum(rate(http_requests_total{status=~\"5..\"}[5m]))","legendFormat":"erros 5xx/s"}]}
+  ]
+}

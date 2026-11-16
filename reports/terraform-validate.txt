@@ -1,0 +1,5 @@
+STATUS: BLOQUEADO PELO AMBIENTE DE REVISAO
+Terraform init: AzureRM 4.81.0 instalado e lockfile gerado.
+Terraform validate: nao concluido.
+Erro do provedor: listen unix /tmp/plugin...: socket: operation not permitted.
+Validar novamente no GitHub Actions ou no computador autorizado antes de plan/apply.

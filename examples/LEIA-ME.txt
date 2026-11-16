@@ -1,0 +1,1 @@
+Imagens reais do conjunto de TESTE PlantDoc, CC BY 4.0 conforme a base. Os nomes descrevem o rotulo da base, nao garantem que o modelo acertara. Os arquivos nao participaram do treinamento. Fontes em SOURCES.json; autoria e licenca em docs/PLANTDOC_LICENSE.txt. Nao confundir estas fotos com coleta propria em campo.
