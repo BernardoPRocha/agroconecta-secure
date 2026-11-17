@@ -87,7 +87,7 @@ resource "azurerm_network_security_group" "nsg_agro" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_ranges    = ["80", "443"]
-    source_address_prefix      = "*"
+    source_address_prefix      = var.ssh_allowed_cidr
     destination_address_prefix = "*"
   }
 }
@@ -117,6 +117,7 @@ resource "azurerm_linux_virtual_machine" "vm_agro" {
   admin_username                  = "azureuser"
   disable_password_authentication = true
   network_interface_ids           = [azurerm_network_interface.nic_agro.id]
+  depends_on                      = [azurerm_network_interface_security_group_association.nsg_assoc]
 
   admin_ssh_key {
     username   = "azureuser"
@@ -126,6 +127,7 @@ resource "azurerm_linux_virtual_machine" "vm_agro" {
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
+    disk_size_gb         = 64
   }
 
   source_image_reference {
