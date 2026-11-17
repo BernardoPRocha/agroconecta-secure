@@ -192,7 +192,7 @@ resource "azurerm_federated_identity_credential" "github" {
   parent_id           = azurerm_user_assigned_identity.github.id
   audience            = ["api://AzureADTokenExchange"]
   issuer              = "https://token.actions.githubusercontent.com"
-  subject             = "repo:${var.github_repository}:environment:production"
+  subject             = "repo:BernardoPRocha@126582923/agroconecta-secure@1460562175:environment:production"
 }
 resource "azurerm_role_assignment" "deploy_vm" {
   scope                = azurerm_linux_virtual_machine.vm_agro.id
