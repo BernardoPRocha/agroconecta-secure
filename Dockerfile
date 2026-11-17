@@ -1,8 +1,8 @@
-FROM python:3.12-slim-bookworm
+FROM python:3.12-slim-trixie
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 \
     YOLO_CONFIG_DIR=/tmp/ultralytics MPLCONFIGDIR=/tmp/matplotlib TORCH_THREADS=2
 WORKDIR /app
-RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 \
+RUN apt-get update && apt-get upgrade -y \
     && rm -rf /var/lib/apt/lists/*
 COPY requirements.txt .
 RUN pip install --no-cache-dir torch==2.10.0 torchvision==0.25.0 --index-url https://download.pytorch.org/whl/cpu \

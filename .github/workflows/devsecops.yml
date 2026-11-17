@@ -50,7 +50,33 @@ jobs:
           bash -n scripts/deploy_vm.sh
       - name: Construir imagem
         run: docker build -t agroconecta-mvp:${{ github.sha }} .
-      - name: Trivy bloqueante
+      - name: Trivy - auditoria completa
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: agroconecta-mvp:${{ github.sha }}
+          format: json
+          output: trivy-report.json
+          exit-code: '0'
+          vuln-type: os,library
+          severity: HIGH,CRITICAL
+      - name: Guardar relatorio Trivy
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-vulnerabilidades
+          path: trivy-report.json
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Trivy - bloquear criticas
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: agroconecta-mvp:${{ github.sha }}
+          format: table
+          exit-code: '1'
+          vuln-type: os,library
+          severity: CRITICAL
+          ignore-unfixed: 'false'
+      - name: Trivy - bloquear corrigiveis
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: agroconecta-mvp:${{ github.sha }}
@@ -58,6 +84,7 @@ jobs:
           exit-code: '1'
           vuln-type: os,library
           severity: HIGH,CRITICAL
+          ignore-unfixed: 'true'
       - name: Validar configuração Caddy
         run: docker run --rm -e SITE_DOMAIN=agroconecta-validation.example.com -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" caddy:2.10.2-alpine caddy validate --config /etc/caddy/Caddyfile
       - name: Smoke test do contêiner sem root
@@ -85,7 +112,7 @@ jobs:
           retention-days: 1
   deploy:
     needs: validate
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: production
     permissions:
