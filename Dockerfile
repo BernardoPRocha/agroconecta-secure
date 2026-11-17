@@ -7,7 +7,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
 COPY requirements.txt .
 RUN pip install --no-cache-dir torch==2.10.0 torchvision==0.25.0 --index-url https://download.pytorch.org/whl/cpu \
     && pip install --no-cache-dir -r requirements.txt \
-    && pip install --no-cache-dir --upgrade setuptools==78.1.1 wheel==0.46.2 jaraco.context==6.1.0 \
+    && pip install --no-cache-dir --upgrade setuptools==82.0.1 wheel==0.46.2 jaraco.context==6.1.0 \
     && groupadd --gid 10001 agrogroup && useradd --uid 10001 --gid agrogroup --no-create-home agrouser
 COPY --chown=agrouser:agrogroup app ./app
 COPY --chown=agrouser:agrogroup vision ./vision
