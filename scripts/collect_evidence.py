@@ -5,10 +5,9 @@ follow HTTP redirects and rejects arbitrary hosts, IPs, ports and URL paths.
 """
 
 import argparse
-import http.client
+import httpx
 import json
 import re
-import ssl
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -48,16 +47,19 @@ def validated_host(origin: str) -> str:
 
 
 def https_request(host, path, *, method="GET", data=None, headers=None, timeout=30, max_bytes=100000):
-    """Verified TLS, fixed HTTPS port; no automatic redirects or proxying."""
-    tls_context = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH)
-    conn = http.client.HTTPSConnection(host, port=443, timeout=timeout, context=tls_context)
-    try:
-        conn.request(method, path, body=data, headers=headers or {})
-        response = conn.getresponse()
-        return response.status, response.read(max_bytes)
-    finally:
-        conn.close()
-
+    """Verified HTTPS, no proxies/redirects and a bounded response body."""
+    host = validated_host(f"https://{host}")
+    with httpx.stream(
+        method, f"https://{host}{path}", content=data,
+        headers=headers or {}, timeout=timeout,
+        verify=True, follow_redirects=False, trust_env=False,
+    ) as response:
+        body = bytearray()
+        for chunk in response.iter_bytes(chunk_size=16384):
+            body.extend(chunk[:max_bytes - len(body)])
+            if len(body) >= max_bytes:
+                break
+        return response.status_code, bytes(body)
 
 def collect(base):
     host = validated_host(base)
@@ -123,4 +125,5 @@ if __name__ == "__main__":
     dest.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
     print("APROVADO" if result["passed"] else "FALHOU: confira o JSON gerado")
     raise SystemExit(0 if result["passed"] else 1)
+
 
