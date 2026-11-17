@@ -3,7 +3,7 @@ groups:
   - orgId: 1
     name: Disponibilidade AgroConecta
     folder: AgroConecta
-    interval: 15s
+    interval: 20s
     rules:
       - uid: agroconecta-down
         title: AgroConecta indisponível
