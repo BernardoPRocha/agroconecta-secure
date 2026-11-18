@@ -116,7 +116,7 @@ sudo cat /opt/agroconecta/.grafana-password
 
 Abra http://localhost:3000 (usuário admin) e http://localhost:9090/targets. Há dashboard e regra `AgroConecta indisponível` já provisionados. Não é necessário criar a regra manualmente. Volumes preservam dados, alertas e certificados entre recriações de contêineres. Não use `docker compose down -v`.
 
-A regra usa `up < 1`, avalia a cada 15 segundos e aguarda 30 segundos. No Grafana, capture estado Normal antes do teste. Em uma sessão SSH na VM:
+A regra usa `up < 1`, avalia a cada 20 segundos e aguarda 30 segundos. No Grafana, capture estado Normal antes do teste. Em uma sessão SSH na VM:
 
 ```bash
 cd /opt/agroconecta

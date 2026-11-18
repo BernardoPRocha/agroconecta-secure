@@ -1,22 +1,19 @@
-# Checklist de entrega Secure
+# Checklist final AgroConecta Secure - 17/11/2026
 
-## Código preparado nesta revisão
-- [x] requirements.txt incluído no contexto Docker; aplicação não-root.
-- [x] ACV incorporado, pesos reais, navegação e inferência verificadas localmente.
-- [x] Deploy OIDC + Azure Run Command; SSH reservado ao administrador.
-- [x] Caddy HTTPS e porta da aplicação sem exposição direta.
-- [x] Prometheus interno; Grafana local por túnel; persistência e alerta provisionado.
-- [x] Testes de aplicação e configuração; validações disponíveis registradas em reports.
+- [x] Terraform Azure apply: 11 recursos criados (VM Standard_D2s_v4, disco 64 GiB).
+- [x] GitHub Actions #11 (tentativa 2): validate e deploy aprovados.
+- [x] Gitleaks, Semgrep, pytest, Trivy e smoke test do contêiner no CI.
+- [x] HTTPS /ready com modelo carregado e inferência de folhas demonstrada.
+- [x] Script collect_evidence.py: APROVADO; JSON original permanece local no computador.
+- [x] Prometheus target 1/1 UP; Grafana dashboard com dados reais.
+- [x] Teste do alerta: Normal, Pending, Firing e recuperação para Normal.
+- [x] VM desalocada após os testes para reduzir custos de processamento.
+- [x] Relatório final com prints reais em docs/RELATORIO_FINAL_AGROCONECTA_SECURE.pdf.
+- [ ] URL disponível ao avaliador: requer reativar VM e configurar acesso controlado ao NSG.
+- [ ] Conferência da rubrica oficial completa da disciplina.
+- [ ] Print específico UID 10001 dentro da VM (Dockerfile e CI comprovam comportamento, mas não print específico na VM).
+- [ ] Demonstração explícita da câmera do navegador; captura existente comprova upload.
+- [ ] Módulos GenAI, Maker e RPA/Big Data ainda pendentes de integração pela equipe.
 
-## Execução externa - ainda não comprovada
-- [ ] Terraform validate/plan/apply no ambiente autorizado.
-- [ ] Repositório Secure público, identity OIDC e environment configurados.
-- [ ] Pipeline completo verde: Gitleaks, Semgrep, Trivy e smoke test.
-- [ ] URL HTTPS funcionando e câmera no navegador.
-- [ ] Docker UID 10001 comprovado na VM.
-- [ ] Prometheus UP e dashboard com dados reais.
-- [ ] Alerta Firing e recuperação registrados.
-- [ ] Evidências e links reais incorporados ao PDF final.
-- [ ] Enunciado oficial integral e forma de envio conferidos.
-
-Não substitua evidências externas por este checklist.
+Riscos: relatório do Trivy registra 47 HIGH, 0 CRITICAL; não alegar ausência de vulnerabilidades.
+As capturas com senhas e tokens foram excluídas do pacote.

@@ -1,0 +1,106 @@
+{
+  "timestamp": "2026-11-17T23:21:02.880375+00:00",
+  "url": "https://agroconecta-bernardo-gs2026.brazilsouth.cloudapp.azure.com",
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "body_excerpt": "<!doctype html><html lang='pt-BR'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>AgroConecta - MVP</title>\n<style>\n* { box-sizing: border-box; }\nbody { font-family: system-ui, -apple-system, 'Segoe UI', Arial, sans-serif; background:#f2f7f3;\n       color:#193026; margin:0; line-height:1.55; }\n.container { max-width:1050px; margin:auto; padding"
+    },
+    {
+      "path": "/ready",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "body_excerpt": "{\"ready\":true,\"acv\":\"modelo_carregado\"}"
+    },
+    {
+      "path": "/visao/",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "body_excerpt": "<!doctype html>\n<html lang=\"pt-BR\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>AgroConecta · Análise de folhas</title><link rel=\"stylesheet\" href=\"./static/style.css?v=1.1\"></head>\n<body><header><a class=\"brand\" href=\"/\">Agro<span>Conecta</span></a><span class=\"tag\">PROTÓTIPO ACADÊMICO · ACV</span></header>\n<a href=\"/\" style=\"display:block;"
+    },
+    {
+      "path": "/visao/health",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "body_excerpt": "{\"status\":\"ok\",\"model_ready\":true}"
+    },
+    {
+      "path": "/metrics",
+      "status": 404,
+      "expected": 404,
+      "passed": true,
+      "body_excerpt": ""
+    }
+  ],
+  "prediction": {
+    "width": 563,
+    "height": 631,
+    "detections": [
+      {
+        "class_id": 0,
+        "label": "Folha de tomate — aparência saudável",
+        "confidence": 0.9325,
+        "bbox": [
+          142.7,
+          0.0,
+          370.1,
+          472.6
+        ]
+      },
+      {
+        "class_id": 0,
+        "label": "Folha de tomate — aparência saudável",
+        "confidence": 0.9324,
+        "bbox": [
+          306.9,
+          139.1,
+          544.9,
+          423.2
+        ]
+      },
+      {
+        "class_id": 0,
+        "label": "Folha de tomate — aparência saudável",
+        "confidence": 0.9146,
+        "bbox": [
+          0.0,
+          475.4,
+          294.6,
+          624.0
+        ]
+      },
+      {
+        "class_id": 0,
+        "label": "Folha de tomate — aparência saudável",
+        "confidence": 0.7612,
+        "bbox": [
+          307.8,
+          469.0,
+          561.6,
+          628.9
+        ]
+      },
+      {
+        "class_id": 0,
+        "label": "Folha de tomate — aparência saudável",
+        "confidence": 0.7585,
+        "bbox": [
+          1.8,
+          247.0,
+          360.6,
+          447.5
+        ]
+      }
+    ],
+    "status": "detections",
+    "latency_ms": 48.2,
+    "notice": "Triagem visual experimental. Confiança não é probabilidade clínica. Ausência de detecção não confirma saúde."
+  },
+  "passed": true
+}
