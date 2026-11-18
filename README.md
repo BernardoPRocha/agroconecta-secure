@@ -14,7 +14,7 @@ Portal FastAPI com ACV real em `/visao/`: modelo YOLOv8n treinado para três cla
 - Deploy via Azure Run Command: não depende de SSH do runner e não usa chave SSH privada no GitHub.
 - Prometheus, Grafana, volumes persistentes e alerta provisionado `agroconecta-down`.
 
-**Estado:** código corrigido e testes locais executados. Não há comprovação de deploy Azure, certificado emitido, pipeline verde ou alerta Firing nesta versão. Confira `reports/VALIDACAO.md`. Não apresente configuração como evidência de execução.
+**Estado atualizado:** o Azure Terraform apply criou 11 recursos; a execucao GitHub Actions #11 (tentativa 2) aprovou validate e deploy, e a #14 aprovou a entrega final. HTTPS, inferencia, Prometheus, Grafana e alerta Firing/recuperacao foram testados com evidencias reais. A VM foi desalocada em 17/11/2026 para economizar creditos; portanto a URL fica offline ate reativacao e acesso controlado ao NSG. Documento final: docs/RELATORIO_FINAL_AGROCONECTA_SECURE.pdf.
 
 ## 1. Executar no seu computador
 
@@ -149,3 +149,20 @@ Limites: MVP acadêmico público sem cadastro de usuários; inferência limitada
 Código e modelo: https://github.com/BernardoPRocha/agroconecta-acv, commit `bf47e285c36955e41b6f676bfc2d5a2c3f311744`. Pesos preservados, sem retreinamento. PlantDoc: créditos em `examples/SOURCES.json` e `docs/PLANTDOC_LICENSE.txt`; Ultralytics segue AGPL-3.0 ou licença comercial. A documentação de ACV contém as métricas e limitações originais.
 
 Depois da avaliação, remova recursos Azure que não serão usados, utilizando o mesmo estado Terraform. Não execute destroy enquanto a URL precisar ficar disponível para o professor.
+
+## Ficha Tecnica do MVP - Global Solution 2026.2
+
+- Equipe: Bernardo Rocha (RM99209), Eric Rodrigues (RM550249), Renato Izumi (RM99242).
+- Disciplina: Secure DevOps Tools & Cloud Computing; atividade Deploy Blindado.
+- Aplicacao: FastAPI em Python 3.12, com IA YOLOv8n em CPU para triagem experimental de folhas de tomate.
+- Containerizacao: Dockerfile sem root (UID 10001); Docker Compose; Caddy com TLS HTTPS.
+- Nuvem/IaC: Microsoft Azure Brazil South, Ubuntu Server 22.04, VM Standard_D2s_v4 (2 vCPUs/8 GiB), disco Standard HDD LRS 64 GiB e IP publico estatico; Terraform.
+- Pipeline: GitHub Actions com build, Gitleaks, Semgrep, Trivy, testes e smoke test em push. Deploy e disparado MANUALMENTE por workflow_dispatch apos validacao, via OIDC e Azure Run Command.
+- Seguranca: SSH limitado ao IP administrativo; portas 80/443 liberadas somente durante os testes; token Docker Hub no GitHub Secrets; imagem verificada por digest. Relatorio Trivy documenta 47 HIGH e 0 CRITICAL.
+- Observabilidade: Prometheus UP; Grafana com disponibilidade, trafego, latencia, erros 5xx e alerta de indisponibilidade. Saturacao ainda nao foi instrumentada como quarto golden signal.
+- Privacidade: fotos sao tratadas em memoria pelo codigo do MVP, sem rotina de armazenamento de uploads; nomes/RMs da equipe aparecem na documentacao publica para finalidade academica.
+- Estimativa Azure conforme calculadora (40h de VM, disco e IP durante 1 mes): US$ 16,99; computacao 730h seria US$ 111,69/mensais, antes de disco e IP. Valores ilustrativos, nao fatura.
+- Deploy/testes: validacao final #14 aprovada; deploy #11 aprovado (tentativa 2); demonstracao HTTPS e IA concluida. VM permanece DEALLOCATED para economia.
+- Entrega: um PDF unico com arquitetura, prints, LGPD, custos e hyperlinks em docs/RELATORIO_FINAL_AGROCONECTA_SECURE.pdf.
+- URL demonstrada: https://agroconecta-bernardo-gs2026.brazilsouth.cloudapp.azure.com (offline com VM desalocada).
+- Codigo e evidencias: https://github.com/BernardoPRocha/agroconecta-secure ; links de runs bloqueado e corrigido no PDF.
